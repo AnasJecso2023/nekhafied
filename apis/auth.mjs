@@ -190,7 +190,7 @@ router.post('/signup', (req, res) => {
                         (err, result) => {
                             if (!err) {
                                 console.log("data saved: ", result);
-                                res.status(201).send({ message: "user is created" , data: result});
+                                res.status(201).send({ message: "user is created", data: result });
                             } else {
                                 console.log("db error: ", err);
                                 res.status(500).send({ message: "internal server error" });
@@ -298,22 +298,127 @@ router.post('/logout', (req, res) => {
 
 
 router.get('/Maleusers', (req, res) => {
-        userModel.find({"gender" : "male"}, (err, data) => {
-            if (!err) {
-                res.send({
-                    message: "g3ot all user",
-                    data: data
-                })
-            } else {
-                res.status(500).send({
-                    message: "server error"
-                })
-            }
-        });
+    userModel.find({ "gender": "male" }, (err, data) => {
+        if (!err) {
+            res.send({
+                message: "g3ot all user",
+                data: data
+            })
+        } else {
+            res.status(500).send({
+                message: "server error"
+            })
+        }
+    });
 })
 
+router.get('/requests', (req, res) => {
+    // if(req.body.gender === 'female'){
+
+    //     userModel.find({"gender" : "male"}, (err, data) => {
+    //         if (!err) {
+    //             res.send({
+    //                 message: "g3ot all user",
+    //                 data: data
+    //             })
+    //         } else {
+    //             res.status(500).send({
+    //                 message: "server error"
+    //             })
+    //         }
+    //     });
+    // }
+
+    userModel.find((err, data) => {
+        if (!err) {
+            res.send({
+                message: "g3ot all user",
+                data: data
+            })
+            console.log(data.userM)
+        } else {
+            res.status(500).send({
+                message: "server error"
+            })
+        }
+    });
+
+})
+
+
+router.get('/FemaleusersMatch', (req, res) => {
+    // age: state.user.age,
+    // wifeage: state.user.wifeAge,
+    // city: state.user.city ,
+    // wifeCity : state.user.wifeCity,
+    // reli : state.user.religion,
+    // wifeReli : state.user.wifeReligion,
+    // wifeHeight: state.user.wifeHeight,
+    // height:state.user.hight
+
+    let body = req.body;
+    userModel.find({
+        "gender": "male",
+        "wifeAge": body.age,
+        "age": body.wifeAge,
+        "wifeHeight": body.height,
+        "height": body.wifeHeight,
+        "wifeCity": body.city,
+        "city": body.wifeCity,
+        "religion": body.wifeReligion,
+        "wifeReligion": body.religion,
+    }, { limit: 5 }, (err, data) => {
+        if (!err) {
+            res.send({
+                message: "g3ot all user",
+                data: data
+            })
+        } else {
+            res.status(500).send({
+                message: "server error"
+            })
+        }
+    });
+})
+
+router.get('/MaleusersMatch', (req, res) => {
+    // age: state.user.age,
+    // wifeage: state.user.wifeAge,
+    // city: state.user.city ,
+    // wifeCity : state.user.wifeCity,
+    // reli : state.user.religion,
+    // wifeReli : state.user.wifeReligion,
+    // wifeHeight: state.user.wifeHeight,
+    // height:state.user.hight
+
+    let body = req.body;
+    userModel.find({
+        "gender": "female",
+        "wifeAge": body.age,
+        "age": body.wifeAge,
+        "wifeHeight": body.height,
+        "height": body.wifeHeight,
+        "wifeCity": body.city,
+        "city": body.wifeCity,
+        "religion": body.wifeReligion,
+        "wifeReligion": body.religion,
+    }, { limit: 5 }, (err, data) => {
+        if (!err) {
+            res.send({
+                message: "g3ot all user",
+                data: data
+            })
+        } else {
+            res.status(500).send({
+                message: "server error"
+            })
+        }
+    });
+})
+
+
 router.get('/Femaleusers', (req, res) => {
-    userModel.find({"gender" : "female"}, (err, data) => {
+    userModel.find({ "gender": "female" }, (err, data) => {
         if (!err) {
             res.send({
                 message: "g3ot all user",
@@ -345,24 +450,24 @@ router.get('/users', (req, res) => {
 router.get('/user/:id', (req, res) => {
     let body = req.params.id
     console.log(body)
-userModel.findOne({ _id: body }, (err, data) => {
-    if (!err) {
-        if (data) {
-            res.send({
-                message: `get product by id: ${data._id} success`,
-                data: data
-            });
+    userModel.findOne({ _id: body }, (err, data) => {
+        if (!err) {
+            if (data) {
+                res.send({
+                    message: `get product by id: ${data._id} success`,
+                    data: data
+                });
+            } else {
+                res.status(404).send({
+                    message: "product not found",
+                })
+            }
         } else {
-            res.status(404).send({
-                message: "product not found",
+            res.status(500).send({
+                message: "server error"
             })
         }
-    } else {
-        res.status(500).send({
-            message: "server error"
-        })
-    }
-});
+    });
 })
 
 router.put('/users/:id', async (req, res) => {
@@ -372,49 +477,59 @@ router.put('/users/:id', async (req, res) => {
 
     console.log(body.myId)
     console.log(body.type)
-    if(body.type === 'mes'){
+    if (body.type === 'mes') {
         try {
-        let data = await userModel.findByIdAndUpdate(body.myId,
-            {
-                $push:{userM:  body.userId},
-            },
-            { new: true }
-        ).exec();
+            let data = await userModel.findByIdAndUpdate(body.myId,
+                {
+                    $push: { userM: body.userId },
+                },
+                { new: true }
+            ).exec();
 
-        console.log('updated: ', data);
+            let data2 = await userModel.findByIdAndUpdate(body.userId._id,
+                {
+                    $push: { userM: body.userId },
+                },
+                { new: true }
+            ).exec();
 
-        res.send({
-            message: "product modified successfully"
-        });
+            console.log('updated: ', data);
+            console.log('updated: ', data2);
 
-    } catch (error) {
-        res.status(500).send({
-            message: "server error"
-        })
-        console.log('error')
+            res.send({
+                message: "product modified successfully"
+            });
+
+        } catch (error) {
+            res.status(500).send({
+                message: "server error"
+            })
+            console.log('error')
+        }
     }
-    }
-    else if(body.type === 'fav'){
+    else if (body.type === 'fav') {
         try {
-        let data = await userModel.findByIdAndUpdate(body.myId,
-            {
-                $push:{fav:  body.userId},
-            },
-            { new: true }
-        ).exec();
+            let data = await userModel.findByIdAndUpdate(body.myId,
+                {
+                    $push: { fav: body.userId },
+                },
+                { new: true }
+            ).exec();
 
-        console.log('updated: ', data);
 
-        res.send({
-            message: "product modified successfully"
-        });
 
-    } catch (error) {
-        res.status(500).send({
-            message: "server error"
-        })
-        console.log('error')
-    }
+            console.log('updated: ', data);
+
+            res.send({
+                message: "product modified successfully"
+            });
+
+        } catch (error) {
+            res.status(500).send({
+                message: "server error"
+            })
+            console.log('error')
+        }
     }
     // try {
     //     let data = await userModel.findByIdAndUpdate(id,
@@ -438,7 +553,7 @@ router.put('/users/:id', async (req, res) => {
     //     })
     // }
 
-    
+
 })
 
 router.get('/usersMes/:id', (req, res) => {
@@ -446,27 +561,27 @@ router.get('/usersMes/:id', (req, res) => {
     console.log(body)
     var mesarray = []
     body.userId.map((eachid) => {
-        userModel.findOne({_id : eachid}, (err ,data) => {
+        userModel.findOne({ _id: eachid }, (err, data) => {
             if (!err) {
-        if (data) {
-            mesarray.push(data)
-        } else {
-            res.status(404).send({
-                message: "product not found",
-            })
-        }
-    } else {
-        res.status(500).send({
-            message: "server error"
-        })
-    }
+                if (data) {
+                    mesarray.push(data)
+                } else {
+                    res.status(404).send({
+                        message: "product not found",
+                    })
+                }
+            } else {
+                res.status(500).send({
+                    message: "server error"
+                })
+            }
 
-        } )
+        })
     })
     res.send({
-            message: "server not an error",
-            data: mesarray
-        })
+        message: "server not an error",
+        data: mesarray
+    })
 })
 
 

@@ -11,7 +11,7 @@ router.post('/product', (req, res) => {
 
     if ( // validation
         !body.name
-        || !body.price
+        || !body.title
         || !body.description
     ) {
         res.status(400).send({
@@ -21,7 +21,7 @@ router.post('/product', (req, res) => {
     }
 
     console.log(body.name)
-    console.log(body.price)
+    console.log(body.title)
     console.log(body.description)
 
     // products.push({
@@ -33,7 +33,7 @@ router.post('/product', (req, res) => {
 
     productModel.create({
         name: body.name,
-        price: body.price,
+        price: body.Title,
         description: body.description,
         owner: new mongoose.Types.ObjectId(body.token._id)
     },
@@ -100,81 +100,6 @@ router.get('/product/:id', (req, res) => {
             })
         }
     });
-})
-
-router.delete('/product/:id', (req, res) => {
-    const id = req.params.id;
-
-    productModel.deleteOne({ _id: id }, (err, deletedData) => {
-        console.log("deleted: ", deletedData);
-        if (!err) {
-
-            if (deletedData.deletedCount !== 0) {
-                res.send({
-                    message: "Product has been deleted successfully",
-                })
-            } else {
-                res.status(404);
-                res.send({
-                    message: "No Product found with this id: " + id,
-                });
-            }
-        } else {
-            res.status(500).send({
-                message: "server error"
-            })
-        }
-    });
-
-
-
-
-
-
-
-
-})
-
-router.put('/product/:id', async (req, res) => {
-
-    const body = req.body;
-    const id = req.params.id;
-
-    if (
-        !body.name ||
-        !body.price ||
-        !body.description
-    ) {
-        res.status(400).send(` required parameter missing. example request body:
-        {
-            "name": "value",
-            "price": "value",
-            "description": "value"
-        }`)
-        return;
-    }
-
-    try {
-        let data = await productModel.findByIdAndUpdate(id,
-            {
-                name: body.name,
-                price: body.price,
-                description: body.description
-            },
-            { new: true }
-        ).exec();
-
-        console.log('updated: ', data);
-
-        res.send({
-            message: "product modified successfully"
-        });
-
-    } catch (error) {
-        res.status(500).send({
-            message: "server error"
-        })
-    }
 })
 
 
