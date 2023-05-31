@@ -83,7 +83,7 @@ const userSchema = new mongoose.Schema({
     createdBy:String,
     createdOn: { type: Date, default: Date.now },
 });
-export const userModel = mongoose.model('Nikkahfied-Done', userSchema);
+export const userModel = mongoose.model('Final-Look', userSchema);
 
 
 const mongodbURI = process.env.mongodbURI || "mongodb+srv://dbuser:dbpassword@cluster0.gq9n2zr.mongodb.net/abcdatabase?retryWrites=true&w=majority";
